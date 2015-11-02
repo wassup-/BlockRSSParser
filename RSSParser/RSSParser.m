@@ -109,6 +109,8 @@
             [currentItem setAuthor:tmpString];
         } else if ([elementName isEqualToString:@"guid"]) {
             [currentItem setGuid:tmpString];
+        } else if([elementName isEqualToString:@"media:content"]) {
+            [currentItem addMedia:tmpString forType:RSSMediaTypeImage];
         }
         
         // sometimes the URL is inside enclosure element, not in link. Reference: http://www.w3schools.com/rss/rss_tag_enclosure.asp
