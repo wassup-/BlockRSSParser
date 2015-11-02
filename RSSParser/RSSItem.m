@@ -12,6 +12,8 @@
 
 -(NSArray *)imagesFromHTMLString:(NSString *)htmlstr;
 
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSMutableArray<NSString *> *> *media;
+
 @end
 
 @implementation RSSItem
@@ -32,6 +34,19 @@
     }
     
     return nil;
+}
+
+#pragma mark - Media
+
+-(void)addMedia:(NSString *)media withType:(RSSMediaType) type {
+    if(!self.media[@(type)]) {
+        self.media[@(type)] = NSMutableArray.array;
+    }
+    [self.media[@(type)] addObject: media];
+}
+
+-(NSArray<NSString *> *)getMediaWithType:(RSSMediaType)type {
+    return [self.media[@(type)]];
 }
 
 #pragma mark - retrieve images from html string using regexp (private methode)
@@ -57,11 +72,24 @@
     return [NSArray arrayWithArray:imagesURLStringArray];
 }
 
+#pragma mark - Initialization
+
+-(void)initialize {
+    self.media = NSMutableDictionary.dictionary;
+}
+
+-(void)init {
+    self = [super init];
+    [self initialize];
+    return self;
+}
+
 #pragma mark - NSCoding
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super init]) {
+        [self initialize];
         _title = [aDecoder decodeObjectForKey:@"title"];
         _itemDescription = [aDecoder decodeObjectForKey:@"itemDescription"];
         _content = [aDecoder decodeObjectForKey:@"content"];

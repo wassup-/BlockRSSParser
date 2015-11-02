@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSUInteger, RSSMediaType) {
+	RSSMediaTypeUnknown,
+	RSSMediaTypeImage,
+}
+
 @interface RSSItem : NSObject <NSCoding>
 
 @property (strong,nonatomic) NSString *title;
@@ -20,6 +25,9 @@
 @property (strong,nonatomic) NSDate *pubDate;
 @property (strong,nonatomic) NSString *author;
 @property (strong,nonatomic) NSString *guid;
+
+-(void)addMedia:(NSString *)media withType:(RSSMediaType)type;
+-(NSArray *)getMediaWithType:(RSSMediaType)type;
 
 -(NSArray *)imagesFromItemDescription;
 -(NSArray *)imagesFromContent;
