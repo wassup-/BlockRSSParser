@@ -27,6 +27,6 @@ typedef NS_ENUM(NSUInteger, RSSMediaType) {
 @property (strong,nonatomic) NSString *guid;
 
 -(void)addMedia:(NSString *)media withType:(RSSMediaType)type;
--(NSArray *)getMediaWithType:(RSSMediaType)type;
+-(NSArray<NSString *> *)getMediaWithType:(RSSMediaType)type;
 
 @end
