@@ -18,8 +18,6 @@
     void (^failblock)(NSError *error);
 }
 
-
-
 + (void)parseRSSFeedForRequest:(NSURLRequest *)urlRequest
                        success:(void (^)(NSArray *feedItems))success
                        failure:(void (^)(NSError *error))failure;

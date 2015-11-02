@@ -23,9 +23,9 @@
 - (id)init {
     self = [super init];
     if (self) {
-        items = [[NSMutableArray alloc] init];
+        items = [NSMutableArray new];
         
-        _formatter = [[NSDateFormatter alloc] init];
+        _formatter = [NSDateFormatter new];
         [_formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_EN"]];
         [_formatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss Z"];
     }
@@ -40,7 +40,7 @@
                        success:(void (^)(NSArray *feedItems))success
                        failure:(void (^)(NSError *error))failure
 {
-    RSSParser *parser = [[RSSParser alloc] init];
+    RSSParser *parser = [RSSParser new];
     [parser parseRSSFeedForRequest:urlRequest success:success failure:failure];
 }
 
@@ -54,13 +54,14 @@
     
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:urlRequest];
     
-    operation.responseSerializer = [[AFXMLParserResponseSerializer alloc] init];
+    operation.responseSerializer = [AFXMLParserResponseSerializer new];
     operation.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/xml", @"text/xml",@"application/rss+xml", @"application/atom+xml", nil];
     
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         failblock = [failure copy];
-        [(NSXMLParser *)responseObject setDelegate:self];
-        [(NSXMLParser *)responseObject parse];
+        NSXMLParser *const xmlParser = (NSXMLParser *)responseObject;
+        [xmlParser setDelegate:self];
+        [xmlParser parse];
     }
                                      failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                                          failure(error);
@@ -71,17 +72,25 @@
 }
 
 #pragma mark -
+
+-(RSSMediaType)mediaTypeForURL:(NSString *)url {
+    // TODO
+    return RSSMediaTypeImage;
+}
+
 #pragma mark NSXMLParser delegate
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict {
     
     if ([elementName isEqualToString:@"item"] || [elementName isEqualToString:@"entry"]) {
-        currentItem = [[RSSItem alloc] init];
-	} else if([elementName isEqualToString:@"media:content"]) {
-		[currentItem addMedia:attributeDict[@"url"] withType:RSSMediaTypeImage];
+        currentItem = [RSSItem new];
+	} else if([elementName hasPrefix:@"media:"]) {
+        NSString *const url = attributeDict[@"url"];
+		[currentItem addMedia: url
+                     withType: [self mediaTypeForURL: url]];
 	}
 	
-    tmpString = [[NSMutableString alloc] init];
+    tmpString = NSMutableString.new;
     tmpAttrDict = attributeDict;
 }
 
