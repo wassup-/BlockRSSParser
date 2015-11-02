@@ -11,7 +11,7 @@
 typedef NS_ENUM(NSUInteger, RSSMediaType) {
 	RSSMediaTypeUnknown,
 	RSSMediaTypeImage,
-}
+};
 
 @interface RSSItem : NSObject <NSCoding>
 
@@ -28,8 +28,5 @@ typedef NS_ENUM(NSUInteger, RSSMediaType) {
 
 -(void)addMedia:(NSString *)media withType:(RSSMediaType)type;
 -(NSArray *)getMediaWithType:(RSSMediaType)type;
-
--(NSArray *)imagesFromItemDescription;
--(NSArray *)imagesFromContent;
 
 @end

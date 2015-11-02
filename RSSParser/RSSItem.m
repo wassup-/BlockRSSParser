@@ -8,9 +8,7 @@
 
 #import "RSSItem.h"
 
-@interface RSSItem (Private)
-
--(NSArray *)imagesFromHTMLString:(NSString *)htmlstr;
+@interface RSSItem ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSMutableArray<NSString *> *> *media;
 
@@ -18,27 +16,12 @@
 
 @implementation RSSItem
 
--(NSArray *)imagesFromItemDescription
-{
-    if (self.itemDescription) {
-        return [self imagesFromHTMLString:self.itemDescription];
-    }
-    
-    return nil;
-}
-
--(NSArray *)imagesFromContent
-{
-    if (self.content) {
-        return [self imagesFromHTMLString:self.content];
-    }
-    
-    return nil;
-}
-
 #pragma mark - Media
 
 -(void)addMedia:(NSString *)media withType:(RSSMediaType) type {
+	if(!self.media) {
+		self.media = NSMutableDictionary.dictionary;
+	}
     if(!self.media[@(type)]) {
         self.media[@(type)] = NSMutableArray.array;
     }
@@ -46,7 +29,7 @@
 }
 
 -(NSArray<NSString *> *)getMediaWithType:(RSSMediaType)type {
-    return [self.media[@(type)]];
+    return self.media[@(type)];
 }
 
 #pragma mark - retrieve images from html string using regexp (private methode)
@@ -62,34 +45,35 @@
                                   options:NSRegularExpressionCaseInsensitive
                                   error:&error];
     
-    [regex enumerateMatchesInString:htmlstr 
-                            options:0 
-                              range:NSMakeRange(0, htmlstr.length) 
-                         usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+    [regex enumerateMatchesInString: htmlstr
+                            options: 0
+                              range: NSMakeRange(0, htmlstr.length)
+                         usingBlock: ^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
                              [imagesURLStringArray addObject:[htmlstr substringWithRange:result.range]];
                          }];    
     
-    return [NSArray arrayWithArray:imagesURLStringArray];
+    return [NSArray arrayWithArray: imagesURLStringArray];
 }
-
-#pragma mark - Initialization
-
--(void)initialize {
-    self.media = NSMutableDictionary.dictionary;
-}
-
--(void)init {
-    self = [super init];
-    [self initialize];
-    return self;
-}
+//
+//#pragma mark - Initialization
+//
+//-(void)initialize {
+//    self.media = NSMutableDictionary.dictionary;
+//}
+//
+//-(instancetype)init {
+//	if(self = [super init]) {
+//		[self initialize];
+//	}
+//    return self;
+//}
 
 #pragma mark - NSCoding
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super init]) {
-        [self initialize];
+//        [self initialize];
         _title = [aDecoder decodeObjectForKey:@"title"];
         _itemDescription = [aDecoder decodeObjectForKey:@"itemDescription"];
         _content = [aDecoder decodeObjectForKey:@"content"];
