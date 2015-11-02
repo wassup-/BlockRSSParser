@@ -19,9 +19,6 @@
 #pragma mark - Media
 
 -(void)addMedia:(NSString *)media withType:(RSSMediaType) type {
-	if(!self.media) {
-		self.media = NSMutableDictionary.dictionary;
-	}
     if(!self.media[@(type)]) {
         self.media[@(type)] = NSMutableArray.array;
     }
@@ -54,26 +51,26 @@
     
     return [NSArray arrayWithArray: imagesURLStringArray];
 }
-//
-//#pragma mark - Initialization
-//
-//-(void)initialize {
-//    self.media = NSMutableDictionary.dictionary;
-//}
-//
-//-(instancetype)init {
-//	if(self = [super init]) {
-//		[self initialize];
-//	}
-//    return self;
-//}
+
+#pragma mark - Initialization
+
+-(void)initialize {
+   self.media = NSMutableDictionary.dictionary;
+}
+
+-(instancetype)init {
+	if(self = [super init]) {
+		[self initialize];
+	}
+   return self;
+}
 
 #pragma mark - NSCoding
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super init]) {
-//        [self initialize];
+       [self initialize];
         _title = [aDecoder decodeObjectForKey:@"title"];
         _itemDescription = [aDecoder decodeObjectForKey:@"itemDescription"];
         _content = [aDecoder decodeObjectForKey:@"content"];
