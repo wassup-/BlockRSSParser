@@ -8,12 +8,16 @@
 
 #import "RSSParser.h"
 
-#import "AFHTTPRequestOperation.h"
-#import "AFURLResponseSerialization.h"
-
-@interface RSSParser()
+@interface RSSParser() {
+    RSSItem *currentItem;
+    NSMutableString *tmpString;
+    NSDictionary *tmpAttrDict;
+    void (^block)(NSArray *feedItems);
+    void (^failblock)(NSError *error);
+}
 
 @property (nonatomic) NSDateFormatter *formatter;
+@property (nonatomic, strong) NSMutableArray<RSSItem *> *mutableItems;
 
 @end
 
@@ -23,7 +27,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        items = [NSMutableArray new];
+        self.mutableItems = [NSMutableArray new];
         
         _formatter = [NSDateFormatter new];
         [_formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_EN"]];
@@ -32,43 +36,10 @@
     return self;
 }
 
-#pragma mark -
+#pragma mark - Properties
 
-#pragma mark parser
-
-+ (void)parseRSSFeedForRequest:(NSURLRequest *)urlRequest
-                       success:(void (^)(NSArray *feedItems))success
-                       failure:(void (^)(NSError *error))failure
-{
-    RSSParser *parser = [RSSParser new];
-    [parser parseRSSFeedForRequest:urlRequest success:success failure:failure];
-}
-
-
-- (void)parseRSSFeedForRequest:(NSURLRequest *)urlRequest
-                       success:(void (^)(NSArray *feedItems))success
-                       failure:(void (^)(NSError *error))failure
-{
-    
-    block = [success copy];
-    
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:urlRequest];
-    
-    operation.responseSerializer = [AFXMLParserResponseSerializer new];
-    operation.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/xml", @"text/xml",@"application/rss+xml", @"application/atom+xml", nil];
-    
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        failblock = [failure copy];
-        NSXMLParser *const xmlParser = (NSXMLParser *)responseObject;
-        [xmlParser setDelegate:self];
-        [xmlParser parse];
-    }
-                                     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                         failure(error);
-                                     }];
-    
-    [operation start];
-    
+-(NSArray<RSSItem *> *)items {
+    return self.mutableItems;
 }
 
 #pragma mark -
@@ -96,7 +67,7 @@
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
     if ([elementName isEqualToString:@"item"] || [elementName isEqualToString:@"entry"]) {
-        [items addObject:currentItem];
+        [mutableItems addObject:currentItem];
     }
     if (currentItem != nil && tmpString != nil) {
         
@@ -132,7 +103,7 @@
     }
     
     if ([elementName isEqualToString:@"rss"] || [elementName isEqualToString:@"feed"]) {
-        block(items);
+        block(mutableItems);
     }
 }
 
@@ -144,7 +115,5 @@
     failblock(parseError);
     [parser abortParsing];
 }
-
-#pragma mark -
 
 @end

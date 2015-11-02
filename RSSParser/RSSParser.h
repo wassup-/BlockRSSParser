@@ -6,25 +6,12 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RSSItem.h"
 
-@interface RSSParser : NSObject <NSXMLParserDelegate> {
-    RSSItem *currentItem;
-    NSMutableArray *items;
-    NSMutableString *tmpString;
-    NSDictionary *tmpAttrDict;
-    void (^block)(NSArray *feedItems);
-    void (^failblock)(NSError *error);
-}
+#import <Foundation/Foundation.h>
 
-+ (void)parseRSSFeedForRequest:(NSURLRequest *)urlRequest
-                       success:(void (^)(NSArray *feedItems))success
-                       failure:(void (^)(NSError *error))failure;
+@interface RSSParser : NSObject <NSXMLParserDelegate>
 
-- (void)parseRSSFeedForRequest:(NSURLRequest *)urlRequest
-                       success:(void (^)(NSArray *feedItems))success
-                       failure:(void (^)(NSError *error))failure;
-
+@property (nonatomic, readonly) NSArray<RSSItem *> *items;
 
 @end
