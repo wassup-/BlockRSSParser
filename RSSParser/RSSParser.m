@@ -69,7 +69,7 @@
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
     if ([elementName isEqualToString:@"item"] || [elementName isEqualToString:@"entry"]) {
-        [mutableItems addObject:currentItem];
+        [self.mutableItems addObject:currentItem];
     }
     if (currentItem != nil && tmpString != nil) {
         
@@ -105,7 +105,7 @@
     }
     
     if ([elementName isEqualToString:@"rss"] || [elementName isEqualToString:@"feed"]) {
-        block(mutableItems);
+        block(self.mutableItems);
     }
 }
 
