@@ -57,8 +57,10 @@
         currentItem = [RSSItem new];
 	} else if([elementName hasPrefix:@"media:"]) {
         NSString *const url = attributeDict[@"url"];
-		[currentItem addMedia: url
-                     withType: [self mediaTypeForURL: url]];
+        if(url.length) {
+    		[currentItem addMedia: url
+                         withType: [self mediaTypeForURL: url]];
+        }
 	}
 	
     tmpString = NSMutableString.new;
