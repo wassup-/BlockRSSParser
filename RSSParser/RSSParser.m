@@ -12,8 +12,6 @@
     RSSItem *currentItem;
     NSMutableString *tmpString;
     NSDictionary *tmpAttrDict;
-    void (^block)(NSArray *feedItems);
-    void (^failblock)(NSError *error);
 }
 
 @property (nonatomic) NSDateFormatter *formatter;
@@ -103,10 +101,6 @@
             }
         }
     }
-    
-    if ([elementName isEqualToString:@"rss"] || [elementName isEqualToString:@"feed"]) {
-        block(self.mutableItems);
-    }
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
@@ -114,7 +108,6 @@
 }
 
 - (void)parser:(NSXMLParser *)parser parseErrorOccurred:(NSError *)parseError {
-    failblock(parseError);
     [parser abortParsing];
 }
 
