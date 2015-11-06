@@ -25,16 +25,13 @@
 - (void)parseRSSFeedForRequest:(NSURLRequest *)urlRequest
                        success:(void (^)(NSArray *feedItems))success
                        failure:(void (^)(NSError *error))failure
-{
-    block = [success copy];
-    
+{    
     AFHTTPRequestOperation *const operation = [[AFHTTPRequestOperation alloc] initWithRequest:urlRequest];
     
     operation.responseSerializer = [AFXMLParserResponseSerializer new];
     operation.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/xml", @"text/xml",@"application/rss+xml", @"application/atom+xml", nil];
     
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        failblock = [failure copy];
         NSXMLParser *const xmlParser = (NSXMLParser *)responseObject;
         [xmlParser setDelegate:self];
         [xmlParser parse];
