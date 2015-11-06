@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
+#import "RSSParser+AFNetworking.h"
+
 #import "AFHTTPRequestOperation.h"
 #import "AFURLResponseSerialization.h"
 
@@ -26,17 +28,22 @@
                        success:(void (^)(NSArray *feedItems))success
                        failure:(void (^)(NSError *error))failure
 {    
-    AFHTTPRequestOperation *const operation = [[AFHTTPRequestOperation alloc] initWithRequest:urlRequest];
+    AFHTTPRequestOperation *const operation = [[AFHTTPRequestOperation alloc] initWithRequest: urlRequest];
     
     operation.responseSerializer = [AFXMLParserResponseSerializer new];
     operation.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/xml", @"text/xml",@"application/rss+xml", @"application/atom+xml", nil];
     
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+    [operation setCompletionBlockWithSuccess: ^(AFHTTPRequestOperation *operation, id responseObject) {
         NSXMLParser *const xmlParser = (NSXMLParser *)responseObject;
         [xmlParser setDelegate:self];
         [xmlParser parse];
+    		if(!xmlParser.parserError) {
+    			success(self.items);
+    		} else {
+    			failure(xmlParser.parserError);
+    		}
     }
-                                     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                     failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
                                          failure(error);
                                      }];
     
